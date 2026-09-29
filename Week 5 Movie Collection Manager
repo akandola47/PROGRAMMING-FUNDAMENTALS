@@ -1,0 +1,141 @@
+# Movie Collection Manager
+# Author: Arsh Kandola
+
+# Creates a new movie dictionary
+def create_movie(title, year, genres, rating):
+    movie = {
+        "title": title,
+        "year": year,
+        "genres": genres,
+        "rating": rating
+    }
+
+    return movie
+
+
+# Displays all movies
+def display_movies(movies, heading):
+    print()
+    print(heading)
+    print("-" * 70)
+
+    if len(movies) == 0:
+        print("No movies in this collection.")
+        return
+
+    for movie in movies:
+        genres = " / ".join(movie["genres"])
+
+        print(f"{movie['title']:<25}"
+              f"{movie['year']:<8}"
+              f"{genres:<25}"
+              f"{movie['rating']:.1f}")
+
+
+# Finds the top-rated movies
+def find_top_rated(movies, n):
+    sorted_movies = sorted(
+        movies,
+        key=lambda movie: movie["rating"],
+        reverse=True
+    )
+
+    return sorted_movies[:n]
+
+
+# Calculates the average rating
+def get_average_rating(movies):
+    if len(movies) == 0:
+        return 0.0
+
+    total_rating = 0.0
+
+    for movie in movies:
+        total_rating += movie["rating"]
+
+    average = total_rating / len(movies)
+
+    return round(average, 2)
+
+
+# Main program
+def main():
+
+    # Five pre-loaded movies
+    movies = [
+        {
+            "title": "Inception",
+            "year": 2010,
+            "genres": ["Sci-Fi", "Thriller"],
+            "rating": 8.8
+        },
+        {
+            "title": "The Shawshank Redemption",
+            "year": 1994,
+            "genres": ["Drama"],
+            "rating": 9.3
+        },
+        {
+            "title": "The Godfather",
+            "year": 1972,
+            "genres": ["Crime", "Drama"],
+            "rating": 9.2
+        },
+        {
+            "title": "The Dark Knight",
+            "year": 2008,
+            "genres": ["Action", "Crime", "Drama"],
+            "rating": 9.0
+        },
+        {
+            "title": "Forrest Gump",
+            "year": 1994,
+            "genres": ["Drama", "Romance"],
+            "rating": 8.8
+        }
+    ]
+
+    # Display the starting collection
+    display_movies(movies, "Your Movie Collection")
+
+    # Add two new movies
+    for i in range(2):
+
+        print("\nEnter a new movie")
+
+        title = input("Title: ")
+        year = int(input("Year: "))
+
+        genre_input = input("Genres (separate with commas): ")
+
+        genres = []
+        for genre in genre_input.split(","):
+            genres.append(genre.strip())
+
+        rating = float(input("Rating: "))
+
+        new_movie = create_movie(title, year, genres, rating)
+
+        movies.append(new_movie)
+
+    # Sort movies by year
+    movies.sort(key=lambda movie: movie["year"])
+
+    # Display movies sorted by year
+    display_movies(movies, "All Movies Sorted by Year")
+
+    # Find top 3 rated movies
+    top_movies = find_top_rated(movies, 3)
+
+    display_movies(top_movies, "Top 3 Rated Movies")
+
+    # Calculate average rating
+    average_rating = get_average_rating(movies)
+
+    print()
+    print(f"Collection average rating: {average_rating:.2f}")
+
+
+# Run the program
+if __name__ == "__main__":
+    main()
