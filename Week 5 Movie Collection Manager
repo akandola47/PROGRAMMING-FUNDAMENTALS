@@ -1,6 +1,5 @@
 # Movie Collection Manager
 # Author: Arsh Kandola
-
 # Creates a new movie dictionary
 def create_movie(title, year, genres, rating):
     movie = {
@@ -139,3 +138,38 @@ def main():
 # Run the program
 if __name__ == "__main__":
     main()
+
+Your Movie Collection
+----------------------------------------------------------------------
+Inception                2010    Sci-Fi / Thriller        8.8
+The Shawshank Redemption 1994    Drama                    9.3
+The Godfather            1972    Crime / Drama            9.2
+The Dark Knight          2008    Action / Crime / Drama   9.0
+Forrest Gump             1994    Drama / Romance          8.8
+
+Enter a new movie
+Title: Godzilla
+Year: 2014
+Genres (separate with commas): Sci-Fi
+Rating: 6.4
+
+Enter a new movie
+Title: Star Wars Return of the Sith
+Year: 2005
+Genres (separate with commas): Sci-Fi
+Rating: 7.6
+
+All Movies Sorted by Year
+----------------------------------------------------------------------
+The Godfather            1972    Crime / Drama            9.2
+The Shawshank Redemption 1994    Drama                    9.3
+Forrest Gump             1994    Drama / Romance          8.8
+Star Wars Return of the Sith2005    Sci-Fi                   7.6
+The Dark Knight          2008    Action / Crime / Drama   9.0
+Inception                2010    Sci-Fi / Thriller        8.8
+Godzilla                 2014    Sci-Fi                   6.4
+
+Top 3 Rated Movies
+----------------------------------------------------------------------
+The Shawshank Redemption 1994    Drama                    9.3
+The Godfather            1972    Crime / Drama            9.2
