@@ -1,0 +1,108 @@
+# Library Book Management System
+# Week 6 Programming Assignment
+#Arshpreet Kandola 
+
+class Book:
+
+    def __init__(self, title, author, isbn, year, genre):
+        self.title = title
+        self.author = author
+        self.isbn = isbn
+        self.year = year
+        self.genre = genre
+        self.available = True
+        self.borrower = None
+
+    def __str__(self):
+        return f"{self.isbn:<17} {self.title:<35} {self.author:<25} {self.year:<6} {self.genre:<18} {self.get_status()}"
+
+    def check_out(self, patron_name):
+        if self.available:
+            self.available = False
+            self.borrower = patron_name
+            return True
+        return False
+
+    def return_book(self):
+        self.available = True
+        self.borrower = None
+        return f"'{self.title}' has been returned and is now available."
+
+    def get_status(self):
+        if self.available:
+            return "Available"
+        return f"Checked out to {self.borrower}"
+
+    
+collection = [
+    Book("Ender's Game", "Orson Scott Card", "978-0812550702", 1985, "Science Fiction"),
+    Book("Fahrenheit 451", "Ray Bradbury", "978-1451673319", 1953, "Dystopian"),
+    Book("Star Wars: Return of the Sith", "Matthew Stover", "978-0345428830", 2005, "Science Fiction"),
+    Book("Lord of the Rings: Return of the King", "J.R.R. Tolkien", "978-0261102378", 1955, "Fantasy"),
+    Book("Dune", "Frank Herbert", "978-0441013593", 1965, "Science Fiction"),
+    Book("Frankenstein", "Mary Shelley", "978-0486282114", 1818, "Gothic Fiction")
+]
+
+print("=== Full Collection ===")
+for book in collection:
+    print(book)
+
+if collection[0].check_out("Arsh"):
+    print(f"'{collection[0].title}' checked out to Arsh.")
+else:
+    print(f"'{collection[0].title}' is already checked out.")
+
+if collection[1].check_out("David"):
+    print(f"'{collection[1].title}' checked out to David.")
+else:
+    print(f"'{collection[1].title}' is already checked out.")
+
+if collection[0].check_out("Frodo"):
+    print(f"'{collection[0].title}' checked out to Frodo.")
+else:
+    print(f"'{collection[0].title}' is already checked out.")
+
+
+print(collection[1].return_book())
+
+print("\n=== Sorted by Title ===")
+sorted_collection = sorted(collection, key=lambda book: book.title)
+
+for book in sorted_collection:
+    print(book)
+
+available_books = [book for book in collection if book.available]
+
+print("\n=== Available Books ===")
+
+OUTPUT BELOW 
+MENTALS/Week 6 Library Management "
+=== Full Collection ===
+978-0812550702    Ender's Game                        Orson Scott Card          1985   Science Fiction    Available
+978-1451673319    Fahrenheit 451                      Ray Bradbury              1953   Dystopian          Available
+978-0345428830    Star Wars: Return of the Sith       Matthew Stover            2005   Science Fiction    Available
+978-0261102378    Lord of the Rings: Return of the King J.R.R.Tolkien            1955   Fantasy            Available
+978-0441013593    Dune                                Frank Herbert             1965   Science Fiction    Available
+978-0486282114    Frankenstein                        Mary Shelley              1818   Gothic Fiction     Available
+'Ender's Game' checked out to Arsh.
+'Fahrenheit 451' checked out to David.
+'Ender's Game' is already checked out.
+'Fahrenheit 451' has been returned and is now available.
+
+=== Sorted by Title ===
+978-0441013593    Dune                                Frank Herbert             1965   Science Fiction    Available
+978-0812550702    Ender's Game                        Orson Scott Card          1985   Science Fiction    Checked out to Arsh
+978-1451673319    Fahrenheit 451                      Ray Bradbury              1953   Dystopian          Available
+978-0486282114    Frankenstein                        Mary Shelley              1818   Gothic Fiction     Available
+978-0261102378    Lord of the Rings: Return of the King J.R.R.Tolkien            1955   Fantasy            Available
+978-0345428830    Star Wars: Return of the Sith       Matthew Stover            2005   Science Fiction    Available
+
+=== Available Books ===
+978-1451673319    Fahrenheit 451                      Ray Bradbury              1953   Dystopian          Available
+978-0345428830    Star Wars: Return of the Sith       Matthew Stover            2005   Science Fiction    Available
+978-0261102378    Lord of the Rings: Return of the King J.R.R.Tolkien            1955   Fantasy            Available
+978-0441013593    Dune                                Frank Herbert             1965   Science Fiction    Available
+978-0486282114    Frankenstein                        Mary Shelley              1818   Gothic Fiction     Available
+(base) Muffins-Mac-mini:PROGRAMMING FUNDAMENTALS muffinman$ 
+for book in available_books:
+    print(book)      
