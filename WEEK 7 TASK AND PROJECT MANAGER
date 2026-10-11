@@ -1,3 +1,9 @@
+# Author: Arshpreet Kandola
+# WEEK 7 PROGRAMMING ASSIGNMENT : TASK AND PROJECT MANAGER
+# Date: October 11, 2026
+# Description: A program that manages personal tasks using a SQLite database
+# Tier Level: Base
+
 import sqlite3
 
 
