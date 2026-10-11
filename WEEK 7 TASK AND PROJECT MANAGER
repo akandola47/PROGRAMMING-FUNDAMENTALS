@@ -1,0 +1,233 @@
+import sqlite3
+
+
+def create_connection(db_file):
+    try:
+        conn = sqlite3.connect(db_file)
+        return conn
+    except sqlite3.Error as e:
+        print("Error connecting to database:", e)
+        return None
+
+def setup_database(conn):
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS tasks (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title TEXT NOT NULL,
+                description TEXT,
+                priority TEXT DEFAULT 'Medium',
+                status TEXT DEFAULT 'Pending',
+                due_date TEXT,
+                project_id INTEGER
+            )
+        """)
+    except sqlite3.Error as e:
+        print("Error setting up database:", e)
+
+
+def add_task(conn, title, description, priority, due_date):
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO tasks
+            (title, description, priority, due_date, project_id)
+            VALUES (?, ?, ?, ?, ?)
+        """, (title, description, priority, due_date, None))
+
+        conn.commit()
+        return cursor.lastrowid
+
+    except sqlite3.Error as e:
+        print("Error adding task:", e)
+        return None
+
+def get_all_tasks(conn):
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT * FROM tasks ORDER BY priority, due_date"
+        )
+        return cursor.fetchall()
+
+    except sqlite3.Error as e:
+        print("Error getting tasks:", e)
+        return []
+
+def get_tasks_by_status(conn, status):
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT * FROM tasks WHERE status = ? ORDER BY priority",
+            (status,)
+        )
+        return cursor.fetchall()
+
+    except sqlite3.Error as e:
+        print("Error getting tasks by status:", e)
+        return []
+
+
+def update_task_status(conn, task_id, new_status):
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "UPDATE tasks SET status = ? WHERE id = ?",
+            (new_status, task_id)
+        )
+        conn.commit()
+        return cursor.rowcount > 0
+
+    except sqlite3.Error as e:
+        print("Error updating task:", e)
+        return False
+
+
+def delete_task(conn, task_id):
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "DELETE FROM tasks WHERE id = ?",
+            (task_id,)
+        )
+        conn.commit()
+        return cursor.rowcount > 0
+
+    except sqlite3.Error as e:
+        print("Error deleting task:", e)
+        return False
+
+def display_tasks(tasks):
+    if not tasks:
+        print("No tasks found.")
+        return
+
+    print(
+        f"{'ID':<5} {'Title':<25} {'Priority':<10} "
+        f"{'Status':<15} {'Due Date':<12}"
+    )
+    print("-" * 72)
+
+    for task in tasks:
+        task_id = task[0]
+        title = task[1][:25]
+        priority = task[3]
+        status = task[4]
+        due_date = task[5] if task[5] else ""
+
+        print(
+            f"{task_id:<5} {title:<25} {priority:<10} "
+            f"{status:<15} {due_date:<12}"
+        )
+
+def main():
+    conn = create_connection("tasks.db")
+
+    if conn is None:
+        print("Could not connect to database.")
+        return
+
+    try:
+        setup_database(conn)
+
+        # Add six tasks
+        task1 = add_task(
+            conn, "Finish Python assignment",
+            "Complete database project", "High", "2026-10-15"
+        )
+        task2 = add_task(
+            conn, "Study for exam",
+            "Review class notes", "Medium", "2026-10-18"
+        )
+        task3 = add_task(
+            conn, "Update resume",
+            "Add recent experience", "Low", "2026-10-20"
+        )
+        task4 = add_task(
+            conn, "Fix login bug",
+            "Test login problems", "High", "2026-10-12"
+        )
+        task5 = add_task(
+            conn, "Plan project",
+            "Write project steps", "Medium", "2026-10-22"
+        )
+        task6 = add_task(
+            conn, "Organize files",
+            "Clean up computer files", "Low", "2026-10-25"
+        )
+
+        task_ids = [task1, task2, task3, task4, task5, task6]
+
+        for task_id in task_ids:
+            if task_id is not None:
+                print("Task added with ID:", task_id)
+
+        print("\n=== All Tasks ===")
+        display_tasks(get_all_tasks(conn))
+
+        print("\n=== Pending Tasks ===")
+        display_tasks(get_tasks_by_status(conn, "Pending"))
+
+        updated = update_task_status(conn, task4, "In Progress")
+
+        if updated:
+            print(f"Status updated for task {task4}.")
+        else:
+            print(f"Task {task4} not found.")
+
+        deleted = delete_task(conn, task6)
+
+        if deleted:
+            print(f"Task {task6} deleted successfully.")
+        else:
+            print(f"Task {task6} not found.")
+
+        print("\n=== Final All Tasks ===")
+        display_tasks(get_all_tasks(conn))
+
+    finally:
+        conn.close()
+
+
+if __name__ == "__main__":
+    main()
+
+#RESULTS
+Task added with ID: 1
+Task added with ID: 2
+Task added with ID: 3
+Task added with ID: 4
+Task added with ID: 5
+Task added with ID: 6
+
+=== All Tasks ===
+ID    Title                     Priority   Status          Due Date    
+------------------------------------------------------------------------
+4     Fix login bug             High       Pending         2026-10-12  
+1     Finish Python assignment  High       Pending         2026-10-15  
+3     Update resume             Low        Pending         2026-10-20  
+6     Organize files            Low        Pending         2026-10-25  
+2     Study for exam            Medium     Pending         2026-10-18  
+5     Plan project              Medium     Pending         2026-10-22  
+
+=== Pending Tasks ===
+ID    Title                     Priority   Status          Due Date    
+------------------------------------------------------------------------
+1     Finish Python assignment  High       Pending         2026-10-15  
+4     Fix login bug             High       Pending         2026-10-12  
+3     Update resume             Low        Pending         2026-10-20  
+6     Organize files            Low        Pending         2026-10-25  
+2     Study for exam            Medium     Pending         2026-10-18  
+5     Plan project              Medium     Pending         2026-10-22  
+Status updated for task 4.
+Task 6 deleted successfully.
+
+=== Final All Tasks ===
+ID    Title                     Priority   Status          Due Date    
+------------------------------------------------------------------------
+4     Fix login bug             High       In Progress     2026-10-12  
+1     Finish Python assignment  High       Pending         2026-10-15  
+3     Update resume             Low        Pending         2026-10-20  
+2     Study for exam            Medium     Pending         2026-10-18  
+5     Plan project              Medium     Pending         2026-10-22 
