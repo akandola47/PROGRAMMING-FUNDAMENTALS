@@ -1,0 +1,245 @@
+# Author: Arshpreet Kandola
+# Description: Student Record Management System
+# Part 2: Object Oriented Refactoring
+
+import csv
+
+class Student:
+    """Represent one student record."""
+
+    def __init__(self, student_id, student_name, major, gpa,
+                 total_credits):
+        """Store student information."""
+        self.student_id = student_id.strip().upper()
+        self.student_name = student_name.strip()
+        self.major = major.strip()
+        self.gpa = gpa.strip()
+        self.total_credits = total_credits.strip()
+
+    def __str__(self):
+        """Return student information as a string."""
+        return (
+            f"{self.student_id} | {self.student_name} | "
+            f"{self.major} | {self.gpa} | {self.total_credits}"
+        )
+
+
+class GraduateStudent(Student):
+    """Represent a graduate student with a thesis topic."""
+
+    def __init__(self, student_id, student_name, major, gpa,
+                 total_credits, thesis_topic):
+        """Store graduate student information."""
+        super().__init__(
+            student_id, student_name, major, gpa, total_credits
+        )
+        self.thesis_topic = thesis_topic.strip()
+
+
+class StudentRoster:
+    """Manage student records."""
+
+    def __init__(self):
+        """Create an empty student roster."""
+        self.students = []
+        self.csv_loaded = False
+
+    def load_csv(self, filename):
+        """Load student records from the CSV file."""
+        try:
+            with open(filename, "r", newline="") as file:
+                reader = csv.DictReader(file)
+
+                # Check that the CSV has the expected columns.
+                required_columns = [
+                    "StudentID",
+                    "StudentName",
+                    "Major",
+                    "GPA",
+                    "TotalCredits"
+                ]
+
+                if not reader.fieldnames or not all(
+                    column in reader.fieldnames
+                    for column in required_columns
+                ):
+                    print("Error: CSV headers do not match the expected format.")
+                    return
+
+                new_students = []
+
+                for row in reader:
+                    try:
+                        student = Student(
+                            row["StudentID"],
+                            row["StudentName"],
+                            row["Major"],
+                            row["GPA"],
+                            row["TotalCredits"]
+                        )
+                        new_students.append(student)
+
+                    except (KeyError, AttributeError, TypeError):
+                        print("Error: Invalid student record in CSV.")
+                        return
+
+                # Binary search requires the IDs to be sorted.
+                new_students.sort(
+                    key=lambda student: student.student_id
+                )
+
+                self.students = new_students
+                self.csv_loaded = True
+
+                print(
+                    f"Success! {len(self.students)} "
+                    "student record(s) loaded"
+                )
+
+        except FileNotFoundError:
+            print(f"Error: File '{filename}' was not found.")
+
+        except (OSError, csv.Error) as error:
+            print(f"Error reading file: {error}")
+
+    def list_students(self):
+        """Display all student records."""
+        if not self.csv_loaded:
+            print("Please load a CSV file first.")
+            return
+
+        print("\nStudent Records")
+        print("-" * 75)
+
+        for number, student in enumerate(self.students, start=1):
+            print(f"{number}. {student}")
+
+    def search_by_id(self, search_id):
+        """Find a student using binary search."""
+        if not self.csv_loaded:
+            print("Please load a CSV file first.")
+            return
+
+        search_id = search_id.strip().upper()
+
+        low = 0
+        high = len(self.students) - 1
+
+        while low <= high:
+            middle = (low + high) // 2
+            student = self.students[middle]
+
+            if student.student_id == search_id:
+                print("\nStudent Found:")
+                print(student)
+                return
+
+            elif student.student_id < search_id:
+                low = middle + 1
+
+            else:
+                high = middle - 1
+
+        print(f"No student found with ID '{search_id}'")
+
+    def run(self):
+        """Display the menu and handle user choices."""
+        while True:
+            print("\nStudent Record Management System")
+            print("1. Read CSV")
+            print("2. List CSV Contents")
+            print("3. Search for Student by ID")
+            print("4. Exit")
+
+            choice = input("Enter your choice: ").strip()
+
+            if choice == "1":
+                filename = input("Enter filename: ").strip()
+                self.load_csv(filename)
+
+            elif choice == "2":
+                self.list_students()
+
+            elif choice == "3":
+                search_id = input("Enter student ID: ")
+                self.search_by_id(search_id)
+
+            elif choice == "4":
+                print("Goodbye!")
+                break
+
+            else:
+                print("Invalid choice. Please try again.")
+
+
+if __name__ == "__main__":
+    roster = StudentRoster()
+    roster.run()
+
+Student Record Management System
+1. Read CSV
+2. List CSV Contents
+3. Search for Student by ID
+4. Exit
+Enter your choice: 1
+Enter filename: students.csv
+Success! 10 student record(s) loaded
+
+Student Record Management System
+1. Read CSV
+2. List CSV Contents
+3. Search for Student by ID
+4. Exit
+Enter your choice: 2
+
+Student Records
+---------------------------------------------------------------------------
+1. S1001 | Alice Johnson | Computer Science | 3.85 | 72
+2. S1002 | Brian Martinez | Information Technology | 3.12 | 60
+3. S1003 | Catherine Lee | Cybersecurity | 2.95 | 45
+4. S1004 | David Nguyen | Computer Science | 3.67 | 88
+5. S1005 | Emily Chen | Data Science | 3.91 | 64
+6. S1006 | Frank Rivera | Information Technology | 2.78 | 33
+7. S1007 | Grace Kim | Software Engineering | 3.44 | 76
+8. S1008 | Henry Patel | Computer Science | 2.61 | 51
+9. S1009 | Isabella Scott | Data Science | 3.55 | 40
+10. S1010 | James Turner | Cybersecurity | 3.20 | 92
+
+Student Record Management System
+1. Read CSV
+2. List CSV Contents
+3. Search for Student by ID
+4. Exit
+Enter your choice: 3 
+Enter student ID: S1005
+
+Student Found:
+S1005 | Emily Chen | Data Science | 3.91 | 64
+
+Student Record Management System
+1. Read CSV
+2. List CSV Contents
+3. Search for Student by ID
+4. Exit
+Enter your choice: 3
+Enter student ID: S9999
+No student found with ID 'S9999'
+
+Student Record Management System
+1. Read CSV
+2. List CSV Contents
+3. Search for Student by ID
+4. Exit
+Enter your choice: 3
+Enter student ID: S1010
+
+Student Found:
+S1010 | James Turner | Cybersecurity | 3.20 | 92
+
+Student Record Management System
+1. Read CSV
+2. List CSV Contents
+3. Search for Student by ID
+4. Exit
+Enter your choice: 4
+Goodbye!
