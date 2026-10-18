@@ -1,0 +1,206 @@
+# Programming Assignment:
+# Author: Arshpreet Kandola
+# Date: October 17, 2026
+# Tier Level: Base
+
+import csv
+
+students = []
+csv_loaded = False
+
+
+def load_csv(filename):
+    """Load student records from a CSV file."""
+    global students, csv_loaded
+
+    try:
+        with open(filename, "r", newline="") as file:
+            reader = csv.DictReader(file)
+            new_students = []
+
+            for row in reader:
+                new_students.append(row)
+
+            students = new_students
+            csv_loaded = True
+
+            print(
+                f"Success! {len(students)} "
+                "student record(s) loaded"
+            )
+
+    except FileNotFoundError:
+        print(f"Error: File '{filename}' was not found.")
+    except (OSError, csv.Error) as error:
+        print(f"Error reading file: {error}")
+
+
+def list_students():
+    """Display all loaded student records."""
+    if not csv_loaded:
+        print("Please load a CSV file first.")
+        return
+
+    print("\nStudent Records")
+    print("-" * 75)
+
+    for number, student in enumerate(students, start=1):
+        print(
+            f"{number}. {student['StudentID']} | "
+            f"{student['StudentName']} | "
+            f"{student['Major']} | "
+            f"{student['GPA']} | "
+            f"{student['TotalCredits']}"
+        )
+
+
+def search_by_id(search_id):
+    """Find a student using a linear search."""
+    if not csv_loaded:
+        print("Please load a CSV file first.")
+        return
+
+    search_id = search_id.strip().upper()
+
+    for student in students:
+        if student["StudentID"].strip().upper() == search_id:
+            print("\nStudent Found:")
+            print(
+                f"{student['StudentID']} | "
+                f"{student['StudentName']} | "
+                f"{student['Major']} | "
+                f"{student['GPA']} | "
+                f"{student['TotalCredits']}"
+            )
+            return
+
+    print(f"No student found with ID '{search_id}'")
+
+
+def run():
+    """Display the menu and process user choices."""
+    while True:
+        print("\nStudent Record Management System")
+        print("1. Read CSV")
+        print("2. List CSV Contents")
+        print("3. Search for Student by ID")
+        print("4. Exit")
+
+        choice = input("Enter your choice: ").strip()
+
+        if choice == "1":
+            filename = input("Enter filename: ").strip()
+            load_csv(filename)
+
+        elif choice == "2":
+            list_students()
+
+        elif choice == "3":
+            search_id = input("Enter student ID: ")
+            search_by_id(search_id)
+
+        elif choice == "4":
+            print("Goodbye!")
+            break
+
+        else:
+            print("Invalid choice. Please try again.")
+
+
+if __name__ == "__main__":
+    run()
+
+Student Record Management System
+1. Read CSV
+2. List CSV Contents
+3. Search for Student by ID
+4. Exit
+Enter your choice: 1
+Enter filename: students.csv
+Success! 10 student record(s) loaded
+
+Student Record Management System
+1. Read CSV
+2. List CSV Contents
+3. Search for Student by ID
+4. Exit
+Enter your choice: 2
+
+Student Records
+---------------------------------------------------------------------------
+1. S1001 | Alice Johnson | Computer Science | 3.85 | 72
+2. S1002 | Brian Martinez | Information Technology | 3.12 | 60
+3. S1003 | Catherine Lee | Cybersecurity | 2.95 | 45
+4. S1004 | David Nguyen | Computer Science | 3.67 | 88
+5. S1005 | Emily Chen | Data Science | 3.91 | 64
+6. S1006 | Frank Rivera | Information Technology | 2.78 | 33
+7. S1007 | Grace Kim | Software Engineering | 3.44 | 76
+8. S1008 | Henry Patel | Computer Science | 2.61 | 51
+9. S1009 | Isabella Scott | Data Science | 3.55 | 40
+10. S1010 | James Turner | Cybersecurity | 3.20 | 92
+
+Student Record Management System
+1. Read CSV
+2. List CSV Contents
+3. Search for Student by ID
+4. Exit
+Enter your choice: 3
+Enter student ID: S1005
+
+Student Found:
+S1005 | Emily Chen | Data Science | 3.91 | 64
+
+Student Record Management System
+1. Read CSV
+2. List CSV Contents
+3. Search for Student by ID
+4. Exit
+Enter your choice: 3
+Enter student ID: s1005
+
+Student Found:
+S1005 | Emily Chen | Data Science | 3.91 | 64
+
+Student Record Management System
+1. Read CSV
+2. List CSV Contents
+3. Search for Student by ID
+4. Exit
+Enter your choice: 3
+Enter student ID: S9999
+No student found with ID 'S9999'
+
+Student Record Management System
+1. Read CSV
+2. List CSV Contents
+3. Search for Student by ID
+4. Exit
+Enter your choice: S1001
+Invalid choice. Please try again.
+
+Student Record Management System
+1. Read CSV
+2. List CSV Contents
+3. Search for Student by ID
+4. Exit
+Enter your choice: S9999
+Invalid choice. Please try again.
+
+Student Record Management System
+1. Read CSV
+2. List CSV Contents
+3. Search for Student by ID
+4. Exit
+Enter your choice: 3
+Enter student ID: S1010
+
+Student Found:
+S1010 | James Turner | Cybersecurity | 3.20 | 92
+
+Student Record Management System
+1. Read CSV
+2. List CSV Contents
+3. Search for Student by ID
+4. Exit
+Enter your choice: 4
+Goodbye!
